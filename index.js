@@ -144,6 +144,60 @@ async function run() {
       }
     });
 
+    app.get('/menu/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await menuCollection.findOne(query);
+      res.send(result);
+    })
+
+    app.patch("/menu/:id", async (req, res) => {
+      const { id } = req.params;
+      const updatedData = req.body;
+
+      if (!id) {
+        return res.status(400).send({ message: "Menu ID is required" });
+      }
+
+      try {
+        const updatedItem = await Menu.findByIdAndUpdate(id, updatedData, {
+          new: true,
+        });
+        if (!updatedItem) {
+          return res.status(404).send({ message: "Menu item not found" });
+        }
+        res.send(updatedItem);
+      } catch (error) {
+        console.error("Error updating menu item:", error);
+        res.status(500).send({ message: "Internal Server Error" });
+      }
+    });
+
+    app.delete('/menu/:id', verifyToken, verifyAdmin, async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await menuCollection.deleteOne(query);
+        res.send(result);
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).send({ error: 'Failed to delete user' });
+      }
+    });
+
+    app.get('/menu/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await menuCollection.findOne(query);
+      res.send(result);
+    })
+
+    app.post('/menu', verifyToken, verifyAdmin, async (req, res) => {
+      const item = req.body;
+      const result = await menuCollection.insertOne(item);
+      res.send(result);
+    });
+
     // Reviews Routes
     app.get('/reviews', async (req, res) => {
       try {
