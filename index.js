@@ -150,7 +150,7 @@ async function run() {
       const result = await menuCollection.findOne(query);
       res.send(result);
     })
-
+    //
     app.patch("/menu/:id", async (req, res) => {
       const { id } = req.params;
       const updatedData = req.body;
